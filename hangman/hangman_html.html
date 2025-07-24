@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hangman Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+        }
+
+        #game-container {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            text-align: center;
+            max-width: 450px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        #category-display {
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        #hangman-figure {
+            margin: 0 auto 20px auto;
+            width: 120px;
+            height: 180px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        #word-display {
+            font-family: 'Courier New', monospace;
+            font-size: 2em;
+            letter-spacing: 4px;
+            margin: 20px 0;
+            min-height: 35px;
+        }
+
+        #attempts-display {
+            font-size: 1.1em;
+            color: #d9534f;
+            margin-bottom: 15px;
+        }
+
+        #wrong-letters-display {
+            font-size: 0.9em;
+            color: #777;
+            margin-bottom: 20px;
+            min-height: 18px;
+        }
+
+        #message-display {
+            margin-top: 20px;
+            font-weight: bold;
+            color: #28a745;
+            min-height: 25px;
+        }
+
+        #play-again-button {
+            background-color: #28a745;
+            margin-top: 20px;
+            display: none;
+        }
+
+        #play-again-button:hover {
+            background-color: #218838;
+        }
+
+        #keyboard {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 6px;
+            margin: 18px 0 0 0;
+            user-select: none;
+        }
+
+        .key {
+            width: 32px;
+            height: 38px;
+            background: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 1.1em;
+            font-family: inherit;
+            cursor: pointer;
+            margin: 2px 1px;
+            transition: background 0.2s;
+            outline: none;
+        }
+
+        .key:disabled {
+            background: #bbb;
+            color: #fff;
+            cursor: not-allowed;
+        }
+
+        .key:hover:not(:disabled) {
+            background: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="game-container">
+        <h1>Hangman</h1>
+        <div id="category-display"></div>
+        <div id="hangman-figure">
+            <svg id="hangman-svg" width="120" height="180">
+                <!-- Gallows -->
+                <line x1="20" y1="170" x2="100" y2="170" stroke="#444" stroke-width="4" />
+                <line x1="60" y1="170" x2="60" y2="20" stroke="#444" stroke-width="4" />
+                <line x1="60" y1="20" x2="100" y2="20" stroke="#444" stroke-width="4" />
+                <line x1="100" y1="20" x2="100" y2="40" stroke="#444" stroke-width="4" />
+                <!-- Head -->
+                <circle id="hangman-head" cx="100" cy="55" r="15" stroke="#444" stroke-width="4" fill="none"
+                    style="display:none;" />
+                <!-- Body -->
+                <line id="hangman-body" x1="100" y1="70" x2="100" y2="110" stroke="#444" stroke-width="4"
+                    style="display:none;" />
+                <!-- Left Arm -->
+                <line id="hangman-larm" x1="100" y1="80" x2="80" y2="100" stroke="#444" stroke-width="4"
+                    style="display:none;" />
+                <!-- Right Arm -->
+                <line id="hangman-rarm" x1="100" y1="80" x2="120" y2="100" stroke="#444" stroke-width="4"
+                    style="display:none;" />
+                <!-- Left Leg -->
+                <line id="hangman-lleg" x1="100" y1="110" x2="85" y2="140" stroke="#444" stroke-width="4"
+                    style="display:none;" />
+                <!-- Right Leg -->
+                <line id="hangman-rleg" x1="100" y1="110" x2="115" y2="140" stroke="#444" stroke-width="4"
+                    style="display:none;" />
+            </svg>
+        </div>
+        <div id="word-display"></div>
+        <div id="attempts-display"></div>
+        <div id="wrong-letters-display"></div>
+        <div id="keyboard"></div>
+        <div id="message-display"></div>
+        <button id="play-again-button">Play Again?</button>
+    </div>
+    <script>
+        const wordCategories = {
+            "Animal": [
+                "Lion", "Elephant", "Tiger", "Giraffe", "Zebra", "Bear", "Wolf", "Kangaroo", "Panda", "Camel",
+                "Fox", "Leopard", "Cheetah", "Rhino", "Monkey", "Goat", "Sheep", "Cow", "Dog", "Cat",
+                "Rabbit", "Mouse", "Squirrel", "Deer", "Owl", "Fish", "Bird", "Duck", "Frog", "Snake"
+            ],
+            "Country": [
+                "Egypt", "Germany", "Brazil", "Japan", "Canada", "Italy", "Spain", "France", "China", "India",
+                "Mexico", "Russia", "Australia", "Argentina", "Kenya", "Sweden", "Norway", "Denmark", "Thailand", "Vietnam",
+                "Pakistan", "Indonesia", "Philippines", "Morocco", "South Africa", "Ukraine", "USA", "UK", "Korea", "Greece"
+            ],
+            "Fruit": [
+                "Apple", "Banana", "Mango", "Orange", "Grape", "Watermelon", "Peach", "Pear", "Pineapple", "Cherry",
+                "Plum", "Kiwi", "Lemon", "Lime", "Blueberry", "Strawberry", "Coconut", "Avocado", "Fig", "Date"
+            ],
+            "Color": [
+                "Red", "Blue", "Green", "Yellow", "Purple", "Pink", "Orange", "Brown", "Black", "White",
+                "Grey", "Gold", "Silver", "Navy", "Teal", "Olive", "Violet", "Turquoise", "Maroon", "Beige"
+            ],
+            "Sport": [
+                "Football", "Tennis", "Cricket", "Basketball", "Swimming", "Baseball", "Rugby", "Volleyball", "Golf", "Boxing",
+                "Cycling", "Skiing", "Wrestling", "Karate", "Judo", "Badminton", "Hockey", "Handball", "Surfing", "Diving"
+            ],
+            "Profession": [
+                "Doctor", "Nurse", "Engineer", "Teacher", "Lawyer", "Architect", "Scientist", "Dentist", "Mechanic", "Pilot",
+                "Chef", "Artist", "Musician", "Soldier", "Policeman", "Firefighter", "Journalist", "Accountant", "Actor", "Driver"
+            ],
+            "Vehicle": [
+                "Car", "Truck", "Bus", "Motorcycle", "Bicycle", "Van", "Train", "Airplane", "Boat", "Ship",
+                "Taxi", "Yacht", "Jeep", "Scooter", "Helicopter", "Submarine", "Rocket", "Spaceship", "Tram", "Ambulance"
+            ],
+            "Body Part": [
+                "Head", "Eye", "Ear", "Nose", "Mouth", "Face", "Hair", "Neck", "Shoulder", "Arm",
+                "Hand", "Finger", "Chest", "Back", "Leg", "Knee", "Foot", "Toe", "Brain", "Heart"
+            ],
+            "Clothing": [
+                "Shirt", "Pants", "Jeans", "Jacket", "Coat", "Sweater", "T-shirt", "Shorts", "Skirt", "Dress",
+                "Socks", "Shoes", "Boots", "Hat", "Cap", "Scarf", "Gloves", "Belt", "Tie", "Suit"
+            ],
+            "Tool": [
+                "Hammer", "Screwdriver", "Wrench", "Pliers", "Saw", "Drill", "Axe", "Shovel", "Scissors", "Knife",
+                "Ladder", "Rake", "Mallet", "Level", "Tape Measure", "Toolbox", "Clamp", "Chisel", "Paintbrush", "Crowbar"
+            ],
+            "City": [
+                "London", "Paris", "Berlin", "Tokyo", "Madrid", "Rome", "Moscow", "Beijing", "New York", "Sydney",
+                "Dubai", "Istanbul", "Mumbai", "Delhi", "Los Angeles", "Chicago", "Toronto", "Bangkok", "Seoul", "Singapore"
+            ],
+            "Insect": [
+                "Ant", "Bee", "Wasp", "Butterfly", "Moth", "Mosquito", "Dragonfly", "Grasshopper", "Cricket", "Fly",
+                "Beetle", "Ladybug", "Spider", "Flea", "Tick", "Worm", "Hornet", "Gnat", "Aphid", "Termite"
+            ],
+            "Planet": [
+                "Mercury", "Venus", "Earth", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "Moon", "Sun"
+            ],
+            "Element": [
+                "Hydrogen", "Oxygen", "Carbon", "Gold", "Silver", "Iron", "Copper", "Zinc", "Helium", "Nitrogen",
+                "Neon", "Sodium", "Chlorine", "Aluminum", "Lead", "Platinum", "Nickel", "Tin", "Calcium", "Argon"
+            ],
+            "Emotion": [
+                "Happy", "Sad", "Angry", "Scared", "Excited", "Surprised", "Nervous", "Anxious", "Confused", "Bored",
+                "Hopeful", "Jealous", "Lonely", "Guilty", "Proud", "Relaxed", "Grateful", "Joyful", "Tired", "Calm"
+            ]
+        };
+        let selectedCategory = '';
+        let selectedWord = '';
+        let displayWord = [];
+        let wrongLetters = [];
+        let attempts = 0;
+        const maxAttempts = 6;
+        const categoryDisplay = document.getElementById('category-display');
+        const wordDisplay = document.getElementById('word-display');
+        const messageDisplay = document.getElementById('message-display');
+        const wrongLettersDisplay = document.getElementById('wrong-letters-display');
+        const attemptsDisplay = document.getElementById('attempts-display');
+        const playAgainButton = document.getElementById('play-again-button');
+        const keyboardDiv = document.getElementById('keyboard');
+        const hangmanParts = [
+            'hangman-head',
+            'hangman-body',
+            'hangman-larm',
+            'hangman-rarm',
+            'hangman-lleg',
+            'hangman-rleg'
+        ];
+        function initializeGame() {
+            selectedCategory = '';
+            selectedWord = '';
+            displayWord = [];
+            wrongLetters = [];
+            attempts = 0;
+            messageDisplay.textContent = '';
+            wrongLettersDisplay.textContent = '';
+            playAgainButton.style.display = 'none';
+            // Hide all hangman parts
+            hangmanParts.forEach(id => {
+                document.getElementById(id).style.display = 'none';
+            });
+            // Enable all keyboard keys
+            Array.from(document.getElementsByClassName('key')).forEach(btn => {
+                btn.disabled = false;
+            });
+            const categories = Object.keys(wordCategories);
+            selectedCategory = categories[Math.floor(Math.random() * categories.length)];
+            selectedWord = wordCategories[selectedCategory][Math.floor(Math.random() * wordCategories[selectedCategory].length)];
+            displayWord = Array(selectedWord.length).fill('_');
+            renderGame();
+        }
+        function renderGame() {
+            categoryDisplay.textContent = `Category: ${selectedCategory}`;
+            wordDisplay.textContent = displayWord.join(' ');
+            attemptsDisplay.textContent = `Attempts left: ${maxAttempts - attempts}`;
+            wrongLettersDisplay.textContent = `Wrong letters: ${wrongLetters.join(', ').toUpperCase()}`;
+            // Show hangman parts based on attempts
+            for (let i = 0; i < hangmanParts.length; i++) {
+                document.getElementById(hangmanParts[i]).style.display = (i < attempts) ? '' : 'none';
+            }
+        }
+        function handleGuess(letter) {
+            if (wrongLetters.includes(letter) || displayWord.map(l => l.toLowerCase()).includes(letter)) {
+                messageDisplay.textContent = `You already tried "${letter.toUpperCase()}"!`;
+                return;
+            }
+            let found = false;
+            for (let i = 0; i < selectedWord.length; i++) {
+                if (selectedWord[i].toLowerCase() === letter) {
+                    displayWord[i] = selectedWord[i];
+                }
+            }
+            if (found) {
+                messageDisplay.textContent = `Correct!`;
+            } else {
+                attempts++;
+                wrongLetters.push(letter);
+                messageDisplay.textContent = `Wrong guess!`;
+            }
+            renderGame();
+            checkGameStatus();
+        }
+        function checkGameStatus() {
+            if (!displayWord.includes('_')) {
+                messageDisplay.textContent = '🥳 YOU WIN! 🎉';
+                endGame();
+            } else if (attempts >= maxAttempts) {
+                messageDisplay.textContent = `💀 GAME OVER! The ${selectedCategory} was "${selectedWord}".`;
+                endGame();
+            }
+        }
+        function endGame() {
+            Array.from(document.getElementsByClassName('key')).forEach(btn => {
+                btn.disabled = true;
+            });
+            playAgainButton.style.display = 'block';
+        }
+        function createKeyboard() {
+            const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            keyboardDiv.innerHTML = '';
+            for (let i = 0; i < letters.length; i++) {
+                const btn = document.createElement('button');
+                btn.className = 'key';
+                btn.textContent = letters[i];
+                btn.onclick = function () {
+                    btn.disabled = true;
+                    handleGuess(letters[i].toLowerCase());
+                };
+                keyboardDiv.appendChild(btn);
+            }
+        }
+        playAgainButton.addEventListener('click', initializeGame);
+        createKeyboard();
+        initializeGame();
+    </script>
+</body>
+
+</html>

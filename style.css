@@ -1,0 +1,215 @@
+body {
+    font-family: 'Roboto', Arial, sans-serif;
+    background: #f4f6fb;
+    color: #222;
+    margin: 0;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 700px;
+    margin: 2rem auto;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 24px rgba(44, 62, 80, 0.08);
+    padding: 2rem 2.5rem 1.5rem 2.5rem;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+h1 {
+    font-family: 'Fira Mono', monospace;
+    font-size: 2.5rem;
+    color: #2c3e50;
+    margin-bottom: 0.2em;
+}
+
+.subtitle {
+    color: #6c7a89;
+    font-size: 1.1rem;
+    margin-top: 0;
+}
+
+.controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.controls label {
+    font-weight: 500;
+}
+
+select {
+    font-size: 1rem;
+    padding: 0.4rem 1rem;
+    border-radius: 6px;
+    border: 1px solid #bfc9d1;
+    background: #f9fafb;
+    color: #2c3e50;
+    outline: none;
+    transition: border 0.2s;
+}
+
+select:focus {
+    border: 1.5px solid #2c3e50;
+}
+
+.code-section {
+    margin-bottom: 1.5rem;
+}
+
+.code-block {
+    font-family: 'Fira Mono', monospace;
+    background: #232136;
+    color: #f8f8f2;
+    padding: 1.2rem;
+    border-radius: 10px;
+    font-size: 1.05rem;
+    overflow-x: auto;
+    min-height: 320px;
+    box-shadow: 0 2px 8px rgba(44, 62, 80, 0.04);
+}
+
+.button-row {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+button {
+    font-family: 'Fira Mono', monospace;
+    background: #2c3e50;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 0.6rem 1.4rem;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s;
+    box-shadow: 0 2px 8px rgba(44, 62, 80, 0.08);
+}
+
+button:hover,
+button:focus {
+    background: #34495e;
+    outline: none;
+}
+
+footer {
+    text-align: center;
+    color: #bfc9d1;
+    font-size: 0.95rem;
+    margin-top: 2rem;
+}
+
+@media (max-width: 600px) {
+    .container {
+        padding: 1rem 0.5rem 1rem 0.5rem;
+    }
+
+    .code-block {
+        font-size: 0.95rem;
+        min-height: 200px;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+}
+
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 1em;
+}
+
+.button-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5em;
+    margin-top: 0.5em;
+}
+
+@media (max-width: 600px) {
+    .button-row {
+        flex-direction: column;
+        gap: 0.5em;
+    }
+
+    .container {
+        padding: 0.5em;
+    }
+}
+
+button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    background: #222;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 0.5em 1em;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+button:hover,
+button:focus {
+    background: #444;
+}
+
+.toast {
+    position: fixed;
+    bottom: 2em;
+    right: 2em;
+    background: #222;
+    color: #fff;
+    padding: 0.75em 1.5em;
+    border-radius: 6px;
+    font-size: 1em;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    opacity: 0.95;
+}
+
+
+body {
+    background: #f7f7f7;
+    color: #222;
+}
+
+.container {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+}
+
+
+.tutorial-section details {
+    margin-bottom: 0.5em;
+}
+
+.tutorial-section summary {
+    font-weight: bold;
+    cursor: pointer;
+}
+
+
+#preview-section {
+    background: #fafafa;
+    border-radius: 6px;
+    padding: 1em;
+}
+
+.dark #preview-section {
+    background: #23272e;
+}
