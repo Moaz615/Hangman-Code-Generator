@@ -175,5 +175,3 @@ window.addEventListener('DOMContentLoaded', () => {
     loadCode(currentLanguage);
     setTimeout(loadFromLocalStorage, 200);
 });
-
-
