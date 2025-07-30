@@ -176,14 +176,4 @@ window.addEventListener('DOMContentLoaded', () => {
     setTimeout(loadFromLocalStorage, 200);
 });
 
-const lineCount = document.createElement('div');
-lineCount.style.textAlign = 'right';
-lineCount.style.fontSize = '0.9em';
-lineCount.style.color = '#888';
-document.querySelector('.code-section').appendChild(lineCount);
 
-editor.on("change", () => {
-  const lines = editor.lineCount();
-  const chars = editor.getValue().length;
-  lineCount.textContent = `Lines: ${lines} | Chars: ${chars}`;
-});
